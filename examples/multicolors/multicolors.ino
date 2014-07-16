@@ -17,6 +17,29 @@
               But... as it is used by Arduino's core timing functions,  you don't want 
               to mess with it. Do you ?
 
+
+  The MIT License (MIT)
+  
+  Copyright (c) 2014 Interacting Objects (http://interactingobjects.com)
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
   ======================================================================================*/
 
 #include <InteractingObjects_ButtonPad.h>
@@ -65,6 +88,22 @@ Keypad customKeypad = Keypad(makeKeymap(hexaKeys), pinBtn, pinBtnGnd, ROWS, COLS
 // Creating led matrix
 rgbLedMatrix ledMatrix = rgbLedMatrix(customPinLedRGB,customPinLedGnd,ROWS,COLS);
 
+//-------------------------------------------------------------------------
+// Reconfiguration of PWM frequency
+// Thanks to http://letsmakerobots.com/profile/oddbot
+// See http://letsmakerobots.com/node/40136 
+//-------------------------------------------------------------------------
+void setPWMFreq() {
+  
+  TCCR0B = TCCR0B & B11111000 | B00000011;    // D4 & D13 - Keeping default because Timer0 is used for Arduino timing function ike millis(), delay()...
+  
+  // set timer 1,2,3,4,5 divisor to 1 for PWM frequency of 31372.55 Hz
+  TCCR1B = TCCR1B & B11111000 | B00000001;    // D11 & D12
+  TCCR2B = TCCR2B & B11111000 | B00000001;    // D9 & D10 - Used by tone()... but I don't use tone() so I don't care !
+  TCCR3B = TCCR3B & B11111000 | B00000001;    // D2, D3 & D5
+  TCCR4B = TCCR4B & B11111000 | B00000001;    // D6, D7 & D8
+  TCCR5B = TCCR5B & B11111000 | B00000001;    // D44, D45 & D46
+}
 //-------------------------------------------------------------------------
 // What to do when a key is pressed
 //-------------------------------------------------------------------------
