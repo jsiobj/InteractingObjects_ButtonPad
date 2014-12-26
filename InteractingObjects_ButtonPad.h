@@ -42,6 +42,9 @@
 const byte ROWS=4;
 const byte COLS=4;
 
+#define KEY2COL(key) key%COLS
+#define KEY2ROW(key) key/ROWS
+
 class rgbLedMatrix {
 
   public:
@@ -54,10 +57,15 @@ class rgbLedMatrix {
     byte matrixLedGetState(byte row,byte col);                    // Getting led current state (ON/OFF)
     byte* matrixLedGetColor(byte row,byte col);                   // Getting led current color
     void matrixLedSetState(byte row, byte col, byte color[3]);    // Setting led color
+    void matrixLedSetOff(byte row, byte col);
     void matrixLedSetRandom(byte row, byte col, byte min=0, byte max=255);  // Setting a random color
     void matrixLedSetAll(byte color[3]);                          // Setting all leds to the very same color
     void matrixLedSetAll(byte colors[ROWS][COLS][3]);             // Setting all leds to specific colors
     void matrixLedSetAllRandom();                                 // Setting all leds to random colors
+    void matrixLedSetAllOff();
+
+    void matrixLedSetState(byte key, byte color[3]);    // Setting led color
+    void matrixLedSetOff(byte key);
 
     // Matrix led "locking" function
     void matrixLedToggleLock(byte row,byte col);   // Toggle lonck state (LOCK/UNLOCK)
@@ -73,7 +81,9 @@ class rgbLedMatrix {
     void ledSetState(byte row, byte col, byte color[3]);
     void ledSetRandom(byte row, byte col, byte min=0, byte max=255);
     void ledSetOff(byte row, byte col);
+    void ledSetAllOff();
     void ledTestAll(byte* color);
+    void ledTestMatrix(int period = 200);
     
     // Debugging helpers
     void dbgPrintLedColor();

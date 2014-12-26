@@ -164,6 +164,23 @@ void rgbLedMatrix::matrixLedSetState(byte row, byte col, byte color[3]) {
   ledColor[row][col][2]=color[2];
 }
 
+void rgbLedMatrix::matrixLedSetState(byte key, byte color[3]) {
+  matrixLedSetState(KEY2ROW(key), KEY2COL(key), color);
+}
+
+//-------------------------------------------------------------------------
+// Setting led off
+//-------------------------------------------------------------------------
+void rgbLedMatrix::matrixLedSetOff(byte row, byte col) {
+  ledColor[row][col][0]=0;
+  ledColor[row][col][1]=0;
+  ledColor[row][col][2]=0;
+}
+
+void rgbLedMatrix::matrixLedSetOff(byte key) {
+  matrixLedSetOff(KEY2ROW(key), KEY2COL(key));
+}
+
 //-------------------------------------------------------------------------
 // Setting led to random color
 //-------------------------------------------------------------------------
@@ -198,6 +215,15 @@ void rgbLedMatrix::matrixLedSetAllRandom() {
   for(byte col=0;col<COLS;col++) 
     for(byte row=0;row<ROWS;row++) 
       matrixLedSetRandom(row,col);
+}
+
+//-------------------------------------------------------------------------
+// Setting all leds off
+//-------------------------------------------------------------------------
+void rgbLedMatrix::matrixLedSetAllOff() {
+  for(byte col=0;col<COLS;col++) 
+    for(byte row=0;row<ROWS;row++) 
+      matrixLedSetOff(row,col);
 }
 
 //-------------------------------------------------------------------------
@@ -259,6 +285,60 @@ void rgbLedMatrix::ledTestAll(byte* color) {
 }
 
 //-------------------------------------------------------------------------
+void rgbLedMatrix::ledTestMatrix(int period) {
+  //int period=100; // in ms
+
+  byte color_red[]={255,0,0};
+  byte color_green[]={0,255,0};
+  byte color_blue[]={0,0,255};
+
+  for(int row=0;row<ROWS;row++) {
+    for(int col=0;col<COLS;col++) {
+      ledSetOff(row,col);
+    }
+  }
+  
+  for(int row=0;row<ROWS;row++) {
+    for(int col=0;col<COLS;col++) {
+      ledSetState(row,col,color_red);
+      delay(period);
+      ledSetOff(row,col);     
+      ledSetState(row,col,color_green);
+      delay(period);
+      ledSetOff(row,col);     
+      ledSetState(row,col,color_blue);
+      delay(period);
+      ledSetOff(row,col);     
+    }
+  }
+  
+  for(int row=0;row<ROWS;row++) {
+    for(int col=0;col<COLS;col++) {
+      ledSetState(row,col,color_red);
+    }
+  }
+  delay(1000);
+  for(int row=0;row<ROWS;row++) {
+    for(int col=0;col<COLS;col++) {
+      ledSetState(row,col,color_green);
+    }
+  }
+  delay(1000);
+  for(int row=0;row<ROWS;row++) {
+    for(int col=0;col<COLS;col++) {
+      ledSetState(row,col,color_blue);
+    }
+  }
+  delay(1000);
+  for(int row=0;row<ROWS;row++) {
+    for(int col=0;col<COLS;col++) {
+      ledSetOff(row,col);     
+    }
+  }
+  
+}
+
+//-------------------------------------------------------------------------
 void rgbLedMatrix::ledSetState(byte row, byte col, byte color[3]) {
   analogWrite(pinLedRGB[row][0],color[0]);
   analogWrite(pinLedRGB[row][1],color[1]);
@@ -280,6 +360,16 @@ void rgbLedMatrix::ledSetOff(byte row, byte col) {
   byte off[]={0,0,0};
   ledSetState(row,col,off);  
 }
+
+//-------------------------------------------------------------------------
+// Setting all leds off
+//-------------------------------------------------------------------------
+void rgbLedMatrix::ledSetAllOff() {
+  for(byte col=0;col<COLS;col++) 
+    for(byte row=0;row<ROWS;row++) 
+      ledSetOff(row,col);
+}
+
 
 //==============================================================================
 // Debug helpers... because I had hard time to get all this to work !
