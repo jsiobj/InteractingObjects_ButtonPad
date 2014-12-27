@@ -66,32 +66,32 @@ rgbLedMatrix::rgbLedMatrix(byte userPinLedRGB[ROWS][3], byte userPinLedGnd[COLS]
 // Setting colors for one row (turning in on)
 //-------------------------------------------------------------------------
 void rgbLedMatrix::matrixRowActivate(byte row,byte color[3]) {
-  analogWrite(pinLedRGB[row][0],color[0]);
-  analogWrite(pinLedRGB[row][1],color[1]);
-  analogWrite(pinLedRGB[row][2],color[2]);
+  analogWrite(pinLedRGB[ROW2ADDR(row)][0],color[0]);
+  analogWrite(pinLedRGB[ROW2ADDR(row)][1],color[1]);
+  analogWrite(pinLedRGB[ROW2ADDR(row)][2],color[2]);
 }
 
 //-------------------------------------------------------------------------
 // Switching off a row
 //-------------------------------------------------------------------------
 void rgbLedMatrix::matrixRowDeactivate(byte row) {
-  analogWrite(pinLedRGB[row][0],0);
-  analogWrite(pinLedRGB[row][1],0);
-  analogWrite(pinLedRGB[row][2],0);
+  analogWrite(pinLedRGB[ROW2ADDR(row)][0],0);
+  analogWrite(pinLedRGB[ROW2ADDR(row)][1],0);
+  analogWrite(pinLedRGB[ROW2ADDR(row)][2],0);
 }
 
 //-------------------------------------------------------------------------
 // Switching on a column
 //-------------------------------------------------------------------------
 void rgbLedMatrix::matrixColActivate(byte col) {
-  digitalWrite(pinLedGnd[col],ON);
+  digitalWrite(pinLedGnd[COL2ADDR(col)],ON);
 }
 
 //-------------------------------------------------------------------------
 // Switching off a column
 //-------------------------------------------------------------------------
 void rgbLedMatrix::matrixColDeactivate(byte col) {
-  digitalWrite(pinLedGnd[col],OFF);
+  digitalWrite(pinLedGnd[COL2ADDR(col)],OFF);
 }
 
 //-------------------------------------------------------------------------
@@ -116,7 +116,7 @@ void rgbLedMatrix::matrixLedUnlock(byte row,byte col) {
 }
 
 //-------------------------------------------------------------------------
-// Getting surrent locking state
+// Getting current locking state
 //-------------------------------------------------------------------------
 byte rgbLedMatrix::matrixLedGetLockState(byte row, byte col) {
   return ledLockState[row][col];
@@ -273,6 +273,30 @@ void rgbLedMatrix::matrixLedRefreshDemo(int interval) {
 //==============================================================================
 
 //-------------------------------------------------------------------------
+void rgbLedMatrix::ledSetState(byte row, byte col, byte color[3]) {
+
+  analogWrite(pinLedRGB[ROW2ADDR(row)][0],color[0]);
+  analogWrite(pinLedRGB[ROW2ADDR(row)][1],color[1]);
+  analogWrite(pinLedRGB[ROW2ADDR(row)][2],color[2]);
+  
+  if(color[0]+color[1]+color[2]==0) digitalWrite(pinLedGnd[COL2ADDR(col)],OFF);
+  else                              digitalWrite(pinLedGnd[COL2ADDR(col)],ON);
+}
+
+//-------------------------------------------------------------------------
+void rgbLedMatrix::ledSetRandom(byte row, byte col, byte min, byte max) {
+  ledColor[row][col][0]=random(min,max);
+  ledColor[row][col][1]=random(min,max);
+  ledColor[row][col][2]=random(min,max);
+}
+
+//-------------------------------------------------------------------------
+void rgbLedMatrix::ledSetOff(byte row, byte col) {
+  byte off[]={0,0,0};
+  ledSetState(row,col,off);  
+}
+
+//-------------------------------------------------------------------------
 void rgbLedMatrix::ledTestAll(byte* color) {
   int period=50; // in ms
   for(int row=0;row<ROWS;row++) {
@@ -285,8 +309,16 @@ void rgbLedMatrix::ledTestAll(byte* color) {
 }
 
 //-------------------------------------------------------------------------
+// Setting all leds off
+//-------------------------------------------------------------------------
+void rgbLedMatrix::ledSetAllOff() {
+  for(byte col=0;col<COLS;col++) 
+    for(byte row=0;row<ROWS;row++) 
+      ledSetOff(row,col);
+}
+
+//-------------------------------------------------------------------------
 void rgbLedMatrix::ledTestMatrix(int period) {
-  //int period=100; // in ms
 
   byte color_red[]={255,0,0};
   byte color_green[]={0,255,0};
@@ -338,45 +370,12 @@ void rgbLedMatrix::ledTestMatrix(int period) {
   
 }
 
-//-------------------------------------------------------------------------
-void rgbLedMatrix::ledSetState(byte row, byte col, byte color[3]) {
-  analogWrite(pinLedRGB[row][0],color[0]);
-  analogWrite(pinLedRGB[row][1],color[1]);
-  analogWrite(pinLedRGB[row][2],color[2]);
-  
-  if(color[0]+color[1]+color[2]==0) digitalWrite(pinLedGnd[col],OFF);
-  else                              digitalWrite(pinLedGnd[col],ON);
-}
-
-//-------------------------------------------------------------------------
-void rgbLedMatrix::ledSetRandom(byte row, byte col, byte min, byte max) {
-  ledColor[row][col][0]=random(min,max);
-  ledColor[row][col][1]=random(min,max);
-  ledColor[row][col][2]=random(min,max);
-}
-
-//-------------------------------------------------------------------------
-void rgbLedMatrix::ledSetOff(byte row, byte col) {
-  byte off[]={0,0,0};
-  ledSetState(row,col,off);  
-}
-
-//-------------------------------------------------------------------------
-// Setting all leds off
-//-------------------------------------------------------------------------
-void rgbLedMatrix::ledSetAllOff() {
-  for(byte col=0;col<COLS;col++) 
-    for(byte row=0;row<ROWS;row++) 
-      ledSetOff(row,col);
-}
-
-
 //==============================================================================
 // Debug helpers... because I had hard time to get all this to work !
 //==============================================================================
 
 //-------------------------------------------------------------------------
-void rgbLedMatrix::dbgPrintLedColor() {
+void rgbLedMatrix::dbgMatrixPrintLedColor() {
   for(byte row=0;row<ROWS;row++) {
     for(byte col=0;col<COLS;col++) {
       Serial.print(ledColor[row][col][0]); Serial.print(";");
@@ -388,7 +387,7 @@ void rgbLedMatrix::dbgPrintLedColor() {
 }
 
 //-------------------------------------------------------------------------
-void rgbLedMatrix::dbgPrintLedLockState() {
+void rgbLedMatrix::dbgMatrixPrintLedLockState() {
   for(byte row=0;row<ROWS;row++) {
     for(byte col=0;col<COLS;col++) {
       Serial.print(ledLockState[row][col]); Serial.print("    ");

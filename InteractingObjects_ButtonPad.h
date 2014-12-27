@@ -42,8 +42,14 @@
 const byte ROWS=4;
 const byte COLS=4;
 
-#define KEY2COL(key) key%COLS
+// Translate key number (0 to 15) to x/y address
+#define KEY2COL(key) COLS-(key%COLS)-1
 #define KEY2ROW(key) key/ROWS
+
+// Convert x/y (0/0 is top left, 3/3 is bottom right) 
+// to physical address (0/0) is top left, 3/3 is bottom right
+#define COL2ADDR(col) COLS-col-1 
+#define ROW2ADDR(row) row
 
 class rgbLedMatrix {
 
@@ -76,7 +82,7 @@ class rgbLedMatrix {
     // Effectively displaying colors
     void matrixLedRefresh(int interval = 130);
     void matrixLedRefreshDemo(int interval=1);
-    
+
     // Individual leds function (1 led at a time)
     void ledSetState(byte row, byte col, byte color[3]);
     void ledSetRandom(byte row, byte col, byte min=0, byte max=255);
@@ -86,8 +92,8 @@ class rgbLedMatrix {
     void ledTestMatrix(int period = 200);
     
     // Debugging helpers
-    void dbgPrintLedColor();
-    void dbgPrintLedLockState();
+    void dbgMatrixPrintLedColor();
+    void dbgMatrixPrintLedLockState();
     void dbgPrintColor(byte color[3]);
 
   private:
