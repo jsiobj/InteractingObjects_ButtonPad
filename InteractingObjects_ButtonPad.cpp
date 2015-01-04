@@ -132,6 +132,15 @@ uint8_t rgbLedMatrix::matrixLedGetState(byte row,byte col) {
     return ON;
 }
 
+uint8_t rgbLedMatrix::matrixLedGetState(byte key) {
+  byte row=KEY2ROW(key),col=KEY2COL(key);
+  
+  if(ledColor[row][col][0]+ledColor[row][col][1]+ledColor[row][col][2]==0)
+    return OFF;
+  else
+    return ON;
+}
+
 //-------------------------------------------------------------------------
 // Getting led current color
 //-------------------------------------------------------------------------

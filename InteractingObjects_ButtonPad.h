@@ -61,17 +61,18 @@ class rgbLedMatrix {
     // Matrix basic functions
     void matrixLedToggleState(byte row, byte col, byte color[3]); // Toogling on/off (need to specify the color) 
     byte matrixLedGetState(byte row,byte col);                    // Getting led current state (ON/OFF)
+    byte matrixLedGetState(byte key);                             // Getting led current state (ON/OFF)
     byte* matrixLedGetColor(byte row,byte col);                   // Getting led current color
     void matrixLedSetState(byte row, byte col, byte color[3]);    // Setting led color
+    void matrixLedSetState(byte key, byte color[3]);              // Setting led color
     void matrixLedSetOff(byte row, byte col);
+    void matrixLedSetOff(byte key);
     void matrixLedSetRandom(byte row, byte col, byte min=0, byte max=255);  // Setting a random color
     void matrixLedSetAll(byte color[3]);                          // Setting all leds to the very same color
     void matrixLedSetAll(byte colors[ROWS][COLS][3]);             // Setting all leds to specific colors
     void matrixLedSetAllRandom();                                 // Setting all leds to random colors
     void matrixLedSetAllOff();
 
-    void matrixLedSetState(byte key, byte color[3]);    // Setting led color
-    void matrixLedSetOff(byte key);
 
     // Matrix led "locking" function
     void matrixLedToggleLock(byte row,byte col);   // Toggle lonck state (LOCK/UNLOCK)
