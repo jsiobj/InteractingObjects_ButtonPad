@@ -33,7 +33,9 @@
   SOFTWARE.
  
 */
+#define DEBUG
 
+#include "debug.h"
 #include "InteractingObjects_ButtonPad.h"
 
 //==============================================================================
